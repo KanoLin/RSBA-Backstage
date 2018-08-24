@@ -38,6 +38,15 @@ Route::middleware('web')->group(function(){
         Route::post('/api/manager/publish/volunteer','RSBAController@volunteer');
         Route::post('/api/manager/publish/award','RSBAController@award');
         Route::post('/api/manager/query/{activity_id}/department','RSBAController@member_query');
+        
+        Route::post('/api/publisher/modify/volunteer/{activity_id}','RSBAPublisherController@modify_volunteer');
+        Route::post('/api/publisher/modify/award/{activity_id}','RSBAPublisherController@modify_award');
+        Route::post('/api/publisher/delete/{activity_id}','RSBAPublisherController@kill');
+    });
+
+    Route::middleware('IsInit')->group(function(){
+
+        
     });
    
     
@@ -50,11 +59,10 @@ Route::middleware('web')->group(function(){
     
     Route::post('/api/user/register/{activity_id}','RSBAController@test2');
     
-    Route::post('/api/publisher/modify/volunteer/{activity_id}','RSBAController@test2');
     
-    Route::post('/api/publisher/modify/award/{activity_id}','RSBAController@test2');
     
-    Route::post('/api/publisher/delete/{activity_id}','RSBAController@test2');
+    
+    
     
     Route::post('/api/publisher/roll/{activity_id}','RSBAController@test2'); */
 

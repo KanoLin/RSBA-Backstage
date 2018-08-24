@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Activity;
 use App\MemberList;
 use App\MemberNow;
+use App\SignUp;
 
 
 class RSBAController extends Controller
@@ -113,6 +114,20 @@ class RSBAController extends Controller
                 'current_member_list' => $current_arr
             ]
         ]);
+    }
+
+    //管理员浏览报名用户信息
+    public function userinfo_query(Request $request,$id)
+    {   
+        $activity=Activity::find($id);
+        if ($activity==null)
+            return response()->json([
+            'err_code' => 4,
+            'err_msg' => '活动不存在'
+        ]);
+        
+
+
     }
     
     

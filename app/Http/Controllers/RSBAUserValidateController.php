@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -77,7 +78,14 @@ class RSBAUserValidateController extends Controller
             'is_manager' => $jud
             
         ]); 
-
+        $user=new User;
+        $user->stuno=$request->student_id;
+        $user->name=$data['name'];
+        $user->department=config('RSBA.'.$data['dep']);
+        $user->tele=$data['mobile'];
+        $user->grp=$data['grp'];
+        $user->save();
+        
         return response()->json([
             'err_code' => 0,
             'err_msg' => '',
