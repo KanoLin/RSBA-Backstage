@@ -125,9 +125,33 @@ class RSBAController extends Controller
             'err_code' => 4,
             'err_msg' => '活动不存在'
         ]);
-        
-
-
+        $users=$activity->user()
+                        ->skip($request->start_ord)
+                        ->take($request->number)
+                        ->get();
+        $i=0;
+        $data=array();
+        $usersdata=array();
+        foreach($users as $user)
+        {
+            $i++;
+            $usersdata[]=[
+                'student_id'=>$user->stuno,
+                'name'=>$user->name,
+                'department'=>config('RSBA.'.$user->department),
+                'tele'=>$user->tele
+            ];
+        }
+        if ($i==$request->number){
+            array_pop($usersdata);
+            $data[]=['is_end'=>false];   
+        }else $data[]=['is_end'=>true];  
+        $data[]=['users'=>$usersdata];
+        return response()->json([
+            'err_code'=>0,
+            'err_msg'=>'',
+            'data'=>$data
+        ]);
     }
     
     
