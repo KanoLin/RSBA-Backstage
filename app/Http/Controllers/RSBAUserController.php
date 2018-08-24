@@ -21,17 +21,18 @@ class RSBAUserController extends Controller
     {
         $name = $request->session()->get('name');
         $activity = Activity::find($id);
+        date_default_timezone_set("Asia/Shanghai");
         if ($activity == null)
             return response()->json([
             'err_code' => 4,
             'err_msg' => '活动不存在！'
         ]);
-        if (($activity->type == 0) && ($activity->time < date("Y-M-D h:m:s")))
+        if (($activity->type == 0) && ($activity->time < date("Y-m-d H:i:s")))
             return response()->json([
             'err_code' => 6,
             'err_msg' => '活动已开始！'
         ]);
-        if (($activity->type == 1) && ($activity->time > date("Y-M-D h:m:s")))
+        if (($activity->type == 1) && ($activity->time > date("Y-m-d H:i:s")))
             return response()->json([
             'err_code' => 6,
             'err_msg' => '活动未开始！'
@@ -49,7 +50,7 @@ class RSBAUserController extends Controller
             if (($current >= $member) || ($current >= $award)) {
                 $errcode = 1;
                 $errmsg = '总人数已达上限哦！';
-            } else if ($mn->{$user->department} >= $ml->{$user->department}) {
+            } else if (($mn->{$user->department} >= $ml->{$user->department})&&($activity->type==1)) {
                 $errcode = 2;
                 $errmsg = '部门人数已达上限哦！';
             } else {
@@ -73,6 +74,7 @@ class RSBAUserController extends Controller
     {
         $name = $request->session()->get('name');
         $user = User::where('name', $name)->first();
+        date_default_timezone_set("Asia/Shanghai");
         if ($user == null)
             return response()->json([
             'err_code' => 4,

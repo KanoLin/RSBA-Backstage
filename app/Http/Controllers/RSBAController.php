@@ -57,6 +57,13 @@ class RSBAController extends Controller
             'err_code' => 2,
             'err_msg' => '数据不足！',
         ]);
+
+        if ($request->award > array_sum($request->member_list))
+            return response()->json([
+            'err_code' => 8,
+            'err_msg' => '限制人数少于奖品数哦！',
+        ]);
+
         $va = new Activity;
         $va->title = $request->title;
         $va->type = 1;
@@ -117,44 +124,43 @@ class RSBAController extends Controller
     }
 
     //管理员浏览报名用户信息
-    public function userinfo_query(Request $request,$id)
-    {   
-        $activity=Activity::find($id);
-        if ($activity==null)
+    public function userinfo_query(Request $request, $id)
+    {
+        $activity = Activity::find($id);
+        if ($activity == null)
             return response()->json([
             'err_code' => 4,
             'err_msg' => '活动不存在'
         ]);
-        $users=$activity->user()
-                        ->skip($request->start_ord-1)
-                        ->take($request->number+1)
-                        ->get();
-        $i=0;
-        $data=array();
-        $usersdata=array();
-        foreach($users as $user)
-        {
+        $users = $activity->user()
+            ->skip($request->start_ord - 1)
+            ->take($request->number + 1)
+            ->get();
+        $i = 0;
+        $data = array();
+        $usersdata = array();
+        foreach ($users as $user) {
             $i++;
-            $usersdata[]=[
-                'student_id'=>$user->stuno,
-                'name'=>$user->name,
-                'department'=>config('RSBA.'.$user->department),
-                'tele'=>$user->tele
+            $usersdata[] = [
+                'student_id' => $user->stuno,
+                'name' => $user->name,
+                'department' => config('RSBA.' . $user->department),
+                'tele' => $user->tele
             ];
         }
-        if ($i==$request->number+1){
+        if ($i == $request->number + 1) {
             array_pop($usersdata);
-            $data['is_end']=false;   
-        }else $data['is_end']=true;  
-        $data['users']=$usersdata;
+            $data['is_end'] = false;
+        } else $data['is_end'] = true;
+        $data['users'] = $usersdata;
         return response()->json([
-            'err_code'=>0,
-            'err_msg'=>'',
-            'data'=>$data
+            'err_code' => 0,
+            'err_msg' => '',
+            'data' => $data
         ]);
     }
-    
-    
+
+
 
 
 }

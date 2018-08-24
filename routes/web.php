@@ -2,12 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-
-
-
-
-
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,10 +17,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-/* Route::any('/test','RSBAController@test')->name('test');
-
-Route::any('/{id}/test','RSBAController@test2');
- */
+Route::any('/download','RSBAExportController@export0');//->middleware('web','manager');
+Route::any('/download/{id}','RSBAExportController@export');
+Route::any('/time',function(){
+    date_default_timezone_set("Asia/Shanghai");
+    return date('Y-m-d H:i:s');
+});
 
 Route::middleware('web')->group(function(){
     
@@ -34,7 +30,7 @@ Route::middleware('web')->group(function(){
     Route::post('/api/login','RSBAUserValidateController@login');
     Route::post('/api/signout','RSBAUserValidateController@signout');
     
-    Route::middleware('IsManager')->group(function(){
+    Route::middleware('manager')->group(function(){
         Route::post('/api/manager/publish/volunteer','RSBAController@volunteer');
         Route::post('/api/manager/publish/award','RSBAController@award');
         Route::post('/api/manager/query/{activity_id}/department','RSBAController@member_query');
@@ -42,29 +38,17 @@ Route::middleware('web')->group(function(){
         Route::post('/api/publisher/modify/volunteer/{activity_id}','RSBAPublisherController@modify_volunteer');
         Route::post('/api/publisher/modify/award/{activity_id}','RSBAPublisherController@modify_award');
         Route::post('/api/publisher/delete/{activity_id}','RSBAPublisherController@kill');
+        
+        Route::post('/api/manager/query/{activity_id}/userinfo','RSBAController@userinfo_query');
+        
+        Route::post('/download/{activity_id}','RSBAExportController@export');
     });
 
     Route::middleware('IsInit')->group(function(){
-
-        
+        Route::post('/api/user/query/activity','RSBAUserController@activity_query');
+        Route::post('/api/user/register/{activity_id}','RSBAUserController@register');
     });
-   
-    
-   // Route::post('/api/user/query/activity','RSBAController@test2');
-    
-    
-    /*Route::post('/api/manager/query/{activity_id}/userinfo','RSBAController@test2');
-    
-    Route::post('/api/manager/download/{activity_id}','RSBAController@test2');
-    
-    Route::post('/api/user/register/{activity_id}','RSBAController@test2');
-    
-    
-    
-    
-    
-    
-    Route::post('/api/publisher/roll/{activity_id}','RSBAController@test2'); */
+    /*Route::post('/api/publisher/roll/{activity_id}','RSBAController@test2'); */
 
 
 });
