@@ -34,10 +34,12 @@ Route::middleware('web')->group(function(){
     Route::post('/api/login','RSBAUserValidateController@login');
     Route::post('/api/signout','RSBAUserValidateController@signout');
     
-    Route::post('/api/manager/publish/volunteer','RSBAController@volunteer')->middleware('manager');
-    Route::post('/api/manager/publish/award','RSBAController@award')->middleware('manager');
-    
-    Route::post('/api/manager/query/{activity_id}/department','RSBAController@member_query')->middleware('manager');
+    Route::middleware('IsManager')->group(function(){
+        Route::post('/api/manager/publish/volunteer','RSBAController@volunteer');
+        Route::post('/api/manager/publish/award','RSBAController@award');
+        Route::post('/api/manager/query/{activity_id}/department','RSBAController@member_query');
+    });
+   
     
    // Route::post('/api/user/query/activity','RSBAController@test2');
     

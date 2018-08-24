@@ -1,8 +1,7 @@
 <?php
 
 return [
-    'auth_key' => 'emmmmmmm',
-    'auth_url'=>'https://hemc.100steps.net/2018/auth-bbt/interface.php',
+    
     "0" => "编辑部",
     "1" => "综合管理部",
     "2" => "综合新闻部",

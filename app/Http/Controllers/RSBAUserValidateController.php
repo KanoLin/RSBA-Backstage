@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 class RSBAUserValidateController extends Controller
 {
+    //打开页面时身份验证
     public function init(Request $request)
     {
         if ($request->session()->has('name'))
@@ -32,6 +33,7 @@ class RSBAUserValidateController extends Controller
         ]);
     }
 
+    //退出登录
     public function signout(Request $request)
     {
         $request->session()->flush();
@@ -44,10 +46,10 @@ class RSBAUserValidateController extends Controller
     //登录认证
     public function login(Request $request)
     {
-        $server_url = config('RSBA.auth_url');
+        $server_url = config('RSBA-Validate.auth_url');
 
         $post_data = array(
-            'key' => config('RSBA.auth_key'),
+            'key' => config('RSBA-Validate.auth_key'),
             'stuno' => $request->student_id,
             'password' => $request->password
         );

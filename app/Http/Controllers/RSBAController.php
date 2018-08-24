@@ -12,7 +12,7 @@ use App\MemberNow;
 
 class RSBAController extends Controller
 {
-
+    //管理员发起志愿者活动
     public function volunteer(Request $request)
     {
 
@@ -46,7 +46,8 @@ class RSBAController extends Controller
             'err_msg' => '保存失败！'
         ]);
     }
-
+    
+    //管理员发起福利活动
     public function award(Request $request)
     {
 
@@ -83,6 +84,7 @@ class RSBAController extends Controller
         ]);
     }
 
+    //管理员查询各部门报名人数
     public function member_query(Request $request, $id)
     {
 
@@ -112,116 +114,8 @@ class RSBAController extends Controller
             ]
         ]);
     }
-
-    public function modify_volunteer(Request $request, $id)
-    {
-        $name = $request->session()->get('name');
-        $activity = Activity::find($id);
-
-        if ($activity == null)
-            return response()->json([
-            'err_code' => 4,
-            'err_msg' => '活动不存在！'
-        ]);
-
-        if ($activity->publisher != '$name')
-            return response()->json([
-            'err_code' => 5,
-            'err_msg' => '不是发起人！'
-        ]);
-        if ($activity->time > date("Y-M-D h:m:s"))
-            return response()->json([
-            'err_code' => 6,
-            'err_msg' => '活动已开始！'
-        ]);
-
-        if ($activity->member > $request->member)
-            return response()->json([
-            'err_code' => 7,
-            'err_msg' => '人数不能小于当前人数！'
-        ]);
-
-        $activity->details = $request->details;
-        $activity->time = $request->action_time;
-        $activity->member = $request->member;
-        
-        if ($activity->save())
-            return response()->json([
-            'err_code' => 0,
-            'err_msg' => ''
-        ]);
-        else return response()->json([
-            'err_code' => 3,
-            'err_msg' => '保存失败！'
-        ]);
-    }
     
     
-    
-    public function modify_award(Request $request, $id)
-    {
-        $name = $request->session()->get('name');
-        $activity = Activity::find($id);
-        $ml = MemberList::find($id);
-        if ($activity == null)
-            return response()->json([
-            'err_code' => 4,
-            'err_msg' => '活动不存在！'
-        ]);
-        if ($activity->publisher != '$name')
-            return response()->json([
-            'err_code' => 5,
-            'err_msg' => '不是发起人！'
-        ]);
-        if ($activity->time > date("Y-M-D h:m:s"))
-            return response()->json([
-            'err_code' => 6,
-            'err_msg' => '活动已开始！'
-        ]);
-
-        $activity->details = $request->details;
-        $activity->time = $request->book_time;
-        $activity->award = $request->award;
-
-        $member_arr = $request->member_list;
-        for ($i = 0; $i < 10; $i++) {
-            $ml->{$i} = $member_arr[$i];
-        }
-        if ($activity->save() && $ml->save())
-            return response()->json([
-            'err_code' => 0,
-            'err_msg' => ''
-        ]);
-        else return response()->json([
-            'err_code' => 3,
-            'err_msg' => '保存失败！'
-        ]);
-    }
-
-    public function kill(Request $request,$id)
-    {
-        $name = $request->session()->get('name');
-        $activity = Activity::find($id);
-        $ml = MemberList::find($id);
-        if ($activity == null)
-            return response()->json([
-            'err_code' => 4,
-            'err_msg' => '活动不存在！'
-        ]);
-        if ($activity->publisher != '$name')
-            return response()->json([
-            'err_code' => 5,
-            'err_msg' => '不是发起人！'
-        ]);
-        Activity::destroy($id);
-        MemberList::destroy($id);
-        MemberNow::destroy($id);
-
-        return response()->json([
-            'err_code' => 0,
-            'err_msg' => ''
-        ]);
-    }
 
 
 }
