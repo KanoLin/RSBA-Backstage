@@ -26,39 +26,41 @@ class RSBAUserController extends Controller
             'err_code' => 4,
             'err_msg' => '活动不存在！'
         ]);
+        if (($activity->type == 0) && ($activity->time < date("Y-M-D h:m:s")))
+            return response()->json([
+            'err_code' => 6,
+            'err_msg' => '活动已开始！'
+        ]);
+        if (($activity->type == 1) && ($activity->time > date("Y-M-D h:m:s")))
+            return response()->json([
+            'err_code' => 6,
+            'err_msg' => '活动未开始！'
+        ]);
         $ml = MemberList::find($id);
         $mn = MemberNow::find($id);
         $user = User::where('name', $name)->first();
         $sum = 0;
+        $errcode = -1;
+        $errmsg = '完了，凉凉';
         DB::transaction(function () {
             $member = $activity->member;
-            $award=$activity->member;
-            for ($i = 0; $i < 10; $i++)
-                $sum += $mn->{$i};
-
-            /* if ((($sum>=$member)&&($member!=0))||(($sum>=award)&&)
-            
-            
-            
-                if ($sum < $member) {
-                $activity->user()->attach($user->id);
-                $mn->{$user->department}++;
-                $mn->save();
-                $errcode = 0;
-                $errmsg = '';
-            } else {
+            $award = $activity->member;
+            $current = $activity->current_member;
+            if (($current >= $member) || ($current >= $award)) {
                 $errcode = 1;
                 $errmsg = '总人数已达上限哦！';
-            } else if ($mn->{$user->department} < $ml->{$user->department}) {
-                $activity->user()->attach($user->id);
-                $mn->{$user->department}++;
-                $mn->save();
-                $errcode = 0;
-                $errmsg = '';
-            } else {
+            } else if ($mn->{$user->department} >= $ml->{$user->department}) {
                 $errcode = 2;
                 $errmsg = '部门人数已达上限哦！';
-            } */
+            } else {
+                $activity->current_member++;
+                $mn->{$user->department}++;
+                $activity->save();
+                $mn->save();
+                $activity->user()->attach($user->id);
+                $errcode = 0;
+                $errmsg = '';
+            }
         }, 5);
         return response()->json([
             'err_code' => $errcode,
@@ -76,50 +78,43 @@ class RSBAUserController extends Controller
             'err_code' => 4,
             'err_msg' => '你，不存在'
         ]);
-
-
-
-
-        $users = $activity->user()
-            ->skip($request->start_ord)
-            ->take($request->number)
-            ->get();
-        $i = 0;
-        $data = array();
-        $usersdata = array();
-        foreach ($users as $user) {
-            $i++;
-            $usersdata[] = [
-                'student_id' => $user->stuno,
-                'name' => $user->name,
-                'department' => config('RSBA.' . $user->department),
-                'tele' => $user->tele
-            ];
-        }
-        if ($i == $request->number) {
-            array_pop($usersdata);
-            $data[] = ['is_end' => false];
-        } else $data[] = ['is_end' => true];
-        $data[] = ['users' => $usersdata];
-        return response()->json([
-            'err_code' => 0,
-            'err_msg' => '',
-            'data' => $data
-        ]);
-    }
-    private function activity_query_0(Request $request, $name)
-    {
         if ($request->start_id == 0) $startid = Activity::orderby('id', 'desc')->first()->id;
         else $startid = $request->start_id;
-        $activities = Activity::where('id', '<=', $startid)
-            ->orderBy('id', 'desc')
-            ->take($request->number + 1)
-            ->get();
+        switch ($request->type) {
+            case 0:
+                $activities = Activity::where('id', '<=', $startid)
+                    ->orderBy('id', 'desc')
+                    ->take($request->number + 1)
+                    ->get();
+                break;
+            case 1:
+                $activities = Activity::whereDoesntHave('user', function ($query) {
+                    $query->where('id', $user->id);
+                })->orderBy('id', 'desc')
+                    ->take($request->number + 1)
+                    ->get();
+                break;
+            case 2:
+                $activities = Activity::whereHas('user', function ($query) {
+                    $query->where('id', $user->id);
+                })->orderBy('id', 'desc')
+                    ->take($request->number + 1)
+                    ->get();
+                break;
+            case 3:
+                $activities = Activity::where('publisher', $user->name)
+                    ->orderBy('id', 'desc')
+                    ->take($request->number + 1)
+                    ->get();
+                break;
+        }
+
         $i = 0;
         $data = array();
         $actsdata = array();
         foreach ($activities as $act) {
             $i++;
+            $ary = array();
             $ary = [
                 'id' => $act->id,
                 'is_publisher' => ($name == $act->publisher) ? true : false,
@@ -135,10 +130,22 @@ class RSBAUserController extends Controller
                 $ary['book_time'] = $act->time;
                 $ary['award'] = $act->award;
             }
-
+            $ary['current_member'] = $act->current_member;
+            if (($act->type == 1) && (MemberList::find($act->id)->{$user->department} <= MemberNow::find($act->id)->{$user->department}))
+                $ary['is_department_full'] = true;
+            else $ary['is_department_full'] = false;
+            $actsdata[] = $ary;
         }
-
-
+        if ($i == $request->number + 1) {
+            array_pop($actsdata);
+            $data['is_end'] = false;
+        } else $data['is_end'] = true;
+        $data['activity'] = $actsdata;
+        return response()->json([
+            'err_code' => 0,
+            'err_msg' => '',
+            'data' => $data
+        ]);
     }
 
 

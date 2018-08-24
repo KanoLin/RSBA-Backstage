@@ -26,7 +26,7 @@ class RSBAPublisherController extends Controller
             'err_code' => 5,
             'err_msg' => '不是发起人！'
         ]);
-        if ($activity->time > date("Y-M-D h:m:s"))
+        if ($activity->time < date("Y-M-D h:m:s"))
             return response()->json([
             'err_code' => 6,
             'err_msg' => '活动已开始！'
@@ -70,7 +70,7 @@ class RSBAPublisherController extends Controller
             'err_code' => 5,
             'err_msg' => '不是发起人！'
         ]);
-        if ($activity->time > date("Y-M-D h:m:s"))
+        if ($activity->time < date("Y-M-D h:m:s"))
             return response()->json([
             'err_code' => 6,
             'err_msg' => '活动已开始！'

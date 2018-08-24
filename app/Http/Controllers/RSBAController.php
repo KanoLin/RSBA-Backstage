@@ -126,8 +126,8 @@ class RSBAController extends Controller
             'err_msg' => '活动不存在'
         ]);
         $users=$activity->user()
-                        ->skip($request->start_ord)
-                        ->take($request->number)
+                        ->skip($request->start_ord-1)
+                        ->take($request->number+1)
                         ->get();
         $i=0;
         $data=array();
@@ -142,11 +142,11 @@ class RSBAController extends Controller
                 'tele'=>$user->tele
             ];
         }
-        if ($i==$request->number){
+        if ($i==$request->number+1){
             array_pop($usersdata);
-            $data[]=['is_end'=>false];   
-        }else $data[]=['is_end'=>true];  
-        $data[]=['users'=>$usersdata];
+            $data['is_end']=false;   
+        }else $data['is_end']=true;  
+        $data['users']=$usersdata;
         return response()->json([
             'err_code'=>0,
             'err_msg'=>'',
