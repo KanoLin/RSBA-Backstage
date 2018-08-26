@@ -22,10 +22,18 @@ class RSBAController extends Controller
             'err_code' => 2,
             'err_msg' => '数据不足！',
         ]);
+
+        date_default_timezone_set("Asia/Shanghai");
+        if ($request->action_time<date('Y-m-d H:i:s'))
+        return response()->json([
+            'err_code' => 6,
+            'err_msg' => '时间已经过了哦！',
+        ]);
+
         $va = new Activity;
         $va->title = $request->title;
         $va->type = 0;
-        $va->publisher = 'test';//$request->session()->get('user');
+        $va->publisher = $request->session()->get('name');
         $va->details = $request->details;
         $va->time = $request->action_time;
         $va->member = $request->member;
@@ -63,11 +71,17 @@ class RSBAController extends Controller
             'err_code' => 8,
             'err_msg' => '限制人数少于奖品数哦！',
         ]);
+        date_default_timezone_set("Asia/Shanghai");
+        if ($request->book_time<date('Y-m-d H:i:s'))
+        return response()->json([
+            'err_code' => 6,
+            'err_msg' => '时间已经过了哦！',
+        ]);
 
         $va = new Activity;
         $va->title = $request->title;
         $va->type = 1;
-        $va->publisher = 'test';//$request->session()->get('user');
+        $va->publisher = $request->session()->get('name');
         $va->details = $request->details;
         $va->time = $request->book_time;
         $va->award = $request->award;
@@ -76,7 +90,7 @@ class RSBAController extends Controller
         $ml = new MemberList;
         $member_arr = $request->member_list;
         for ($i = 0; $i < 10; $i++) {
-            $ml->{$i} = $member_arr[$i];
+            $ml->{'dep'.$i} = $member_arr[$i];
         }
 
         $mn = new MemberNow;

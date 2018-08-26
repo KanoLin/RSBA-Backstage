@@ -30,7 +30,7 @@ Route::middleware('web')->group(function(){
     Route::post('/api/login','RSBAUserValidateController@login');
     Route::post('/api/signout','RSBAUserValidateController@signout');
     
-    Route::middleware('manager')->group(function(){
+    //Route::middleware('manager')->group(function(){
         Route::post('/api/manager/publish/volunteer','RSBAController@volunteer');
         Route::post('/api/manager/publish/award','RSBAController@award');
         Route::post('/api/manager/query/{activity_id}/department','RSBAController@member_query');
@@ -42,9 +42,9 @@ Route::middleware('web')->group(function(){
         Route::post('/api/manager/query/{activity_id}/userinfo','RSBAController@userinfo_query');
         
         Route::post('/download/{activity_id}','RSBAExportController@export');
-    });
+    //});
 
-    Route::middleware('IsInit')->group(function(){
+    Route::middleware('init')->group(function(){
         Route::post('/api/user/query/activity','RSBAUserController@activity_query');
         Route::post('/api/user/register/{activity_id}','RSBAUserController@register');
     });

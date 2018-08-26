@@ -83,7 +83,7 @@ class RSBAPublisherController extends Controller
 
         $member_arr = $request->member_list;
         for ($i = 0; $i < 10; $i++) {
-            $ml->{$i} = $member_arr[$i];
+            $ml->{'dep'.$i} = $member_arr[$i];
         }
         if ($activity->save() && $ml->save())
             return response()->json([

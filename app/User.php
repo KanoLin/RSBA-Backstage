@@ -8,6 +8,8 @@ class User extends Model
 {
     protected $table='user';
     
+    public $timestamps = true;
+    
     protected $guarded=[];
 
     public function Activity()

@@ -116,11 +116,11 @@ class RSBAUserController extends Controller
         $actsdata = array();
         foreach ($activities as $act) {
             $i++;
-            $ary = array();
+            $ary = null;
             $ary = [
                 'id' => $act->id,
                 'is_publisher' => ($name == $act->publisher) ? true : false,
-                'registered' => ($act->user()->where('name', $name) == null) ? false : true,
+                'registered' => ($act->user()->where('name', $name)->get() == []) ? false : true,
                 'type' => $act->type,
                 'title' => $act->title,
                 'details' => $act->details
@@ -133,8 +133,8 @@ class RSBAUserController extends Controller
                 $ary['award'] = $act->award;
             }
             $ary['current_member'] = $act->current_member;
-            if (($act->type == 1) && (MemberList::find($act->id)->{$user->department} <= MemberNow::find($act->id)->{$user->department}))
-                $ary['is_department_full'] = true;
+            if (($act->type == 1) && (MemberList::find($act->id)->{'dep'.$user->department} <= MemberNow::find($act->id)->{'dep'.$user->department}))
+                $ary['is_department_full'] = MemberList::find($act->id)->{'dep'.$user->department};
             else $ary['is_department_full'] = false;
             $actsdata[] = $ary;
         }

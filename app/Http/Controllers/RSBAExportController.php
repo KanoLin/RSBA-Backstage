@@ -12,7 +12,7 @@ class RSBAExportController extends Controller
 {
     public function export0()
     {
-        return (new RSBAExport)->download('百步梯活动管理系统.xlsx');
+        return (new RSBAExport)->download('百步梯活动管理系统'.date('Y-m-d H:i:s').'.xlsx');
     }
     public function export(Request $request,$id)
     {

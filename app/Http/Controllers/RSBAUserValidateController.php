@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\User;
 
 
 class RSBAUserValidateController extends Controller
@@ -69,29 +69,34 @@ class RSBAUserValidateController extends Controller
         ]);
 
         $data = $data['data'];
-        $jud=(($data['grp'] == '主管') || ($data['grp'] == '干事')) ? false : true;
+        $jud = (($data['grp'] == '主管') || ($data['grp'] == '干事')) ? false : true;
         $request->session()->put([
             'student_id' => $request->student_id,
             'name' => $data['name'],
-            'tele'=>$data['mobile'],
-            'dep'=> $data['dep'],
+            'tele' => $data['mobile'],
+            'dep' => $data['dep'],
             'is_manager' => $jud
-            
-        ]); 
-        $user=new User;
-        $user->stuno=$request->student_id;
-        $user->name=$data['name'];
-        $user->department=config('RSBA.'.$data['dep']);
-        $user->tele=$data['mobile'];
-        $user->grp=$data['grp'];
-        $user->save();
+
+        ]);
         
+        if (User::where('name', $data['name'])->count() == 0) {
+            $user = new User;
+            $user->stuno = $request->student_id;
+            $user->name = $data['name'];
+            $user->department = config('RSBA.' . $data['dep']);
+            $user->tele = $data['mobile'];
+            $user->grp = $data['grp'];
+            $user->save();
+        }else {
+            $user=User::find(1);
+            $user->save();
+        }
         return response()->json([
             'err_code' => 0,
             'err_msg' => '',
             'data' => [
                 'name' => $data['name'],
-                'is_manager' => $jud 
+                'is_manager' => $jud
             ]
         ]);
     }
