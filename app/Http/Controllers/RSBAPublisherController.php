@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Activity;
 use App\MemberList;
 use App\MemberNow;
+use Illuminate\Support\Facades\DB;
 
 class RSBAPublisherController extends Controller
 {
@@ -14,14 +15,13 @@ class RSBAPublisherController extends Controller
     {
         $name = $request->session()->get('name');
         $activity = Activity::find($id);
-        date_default_timezone_set("Asia/Shanghai");
         if ($activity == null)
             return response()->json([
             'err_code' => 4,
             'err_msg' => '活动不存在！'
         ]);
 
-        if ($activity->publisher != '$name')
+        if ($activity->publisher != $name)
             return response()->json([
             'err_code' => 5,
             'err_msg' => '不是发起人！'
@@ -37,20 +37,26 @@ class RSBAPublisherController extends Controller
             'err_code' => 7,
             'err_msg' => '人数不能小于当前人数！'
         ]);
-
+        DB::beginTransaction();
         $activity->details = $request->details;
         $activity->time = $request->action_time;
         $activity->member = $request->member;
-        
-        if ($activity->save())
+
+
+
+        if ($activity->save()) {
+            DB::commit();
             return response()->json([
-            'err_code' => 0,
-            'err_msg' => ''
-        ]);
-        else return response()->json([
-            'err_code' => 3,
-            'err_msg' => '保存失败！'
-        ]);
+                'err_code' => 0,
+                'err_msg' => ''
+            ]);
+        } else {
+            DB::rollBack();
+            return response()->json([
+                'err_code' => 3,
+                'err_msg' => '保存失败！'
+            ]);
+        }
     }
     
     
@@ -60,13 +66,12 @@ class RSBAPublisherController extends Controller
         $name = $request->session()->get('name');
         $activity = Activity::find($id);
         $ml = MemberList::find($id);
-        date_default_timezone_set("Asia/Shanghai");
         if ($activity == null)
             return response()->json([
             'err_code' => 4,
             'err_msg' => '活动不存在！'
         ]);
-        if ($activity->publisher != '$name')
+        if ($activity->publisher != $name)
             return response()->json([
             'err_code' => 5,
             'err_msg' => '不是发起人！'
@@ -77,27 +82,33 @@ class RSBAPublisherController extends Controller
             'err_msg' => '活动已开始！'
         ]);
 
+        DB::beginTransaction();
         $activity->details = $request->details;
         $activity->time = $request->book_time;
         $activity->award = $request->award;
 
         $member_arr = $request->member_list;
         for ($i = 0; $i < 10; $i++) {
-            $ml->{'dep'.$i} = $member_arr[$i];
+            $ml->{'dep' . $i} = $member_arr[$i];
         }
-        if ($activity->save() && $ml->save())
+
+        if ($activity->save() && $ml->save()) {
+            DB::commit();
             return response()->json([
-            'err_code' => 0,
-            'err_msg' => ''
-        ]);
-        else return response()->json([
-            'err_code' => 3,
-            'err_msg' => '保存失败！'
-        ]);
+                'err_code' => 0,
+                'err_msg' => ''
+            ]);
+        } else {
+            DB::rollBack();
+            return response()->json([
+                'err_code' => 3,
+                'err_msg' => '保存失败！'
+            ]);
+        }
     }
 
     //活动发起人删除活动
-    public function kill(Request $request,$id)
+    public function kill(Request $request, $id)
     {
         $name = $request->session()->get('name');
         $activity = Activity::find($id);
@@ -107,11 +118,12 @@ class RSBAPublisherController extends Controller
             'err_code' => 4,
             'err_msg' => '活动不存在！'
         ]);
-        if ($activity->publisher != '$name')
+        if ($activity->publisher != $name)
             return response()->json([
             'err_code' => 5,
             'err_msg' => '不是发起人！'
         ]);
+        Activity::find($id)->user()->detach();
         Activity::destroy($id);
         MemberList::destroy($id);
         MemberNow::destroy($id);

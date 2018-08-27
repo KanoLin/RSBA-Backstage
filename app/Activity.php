@@ -11,7 +11,7 @@ class Activity extends Model
     
     protected $guarded=[];
 
-    public function User()
+    public function user()
     {
         return $this->belongsToMany('App\User')
                     ->using('App\SignUp')

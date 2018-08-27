@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS activity(
     `current_member` SMALLINT UNSIGNED NOT NULL DEFAULT 0  COMMENT '报名人数',
     `created_at`     DATETIME          NOT NULL            COMMENT '创建时间',
     `updated_at`     DATETIME          NOT NULL            COMMENT '修改时间'
-)ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='活动表';
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动表';
 
 CREATE TABLE IF NOT EXISTS user(
 	`id`             INT AUTO_INCREMENT PRIMARY KEY,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS user(
     `tele`           VARCHAR(20)       NOT NULL DEFAULT '0'    COMMENT '电话',
     `created_at`     DATETIME          NOT NULL                COMMENT '创建时间',
     `updated_at`     DATETIME          NOT NULL                COMMENT '修改时间'
-)ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='用户表';
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 CREATE TABLE IF NOT EXISTS activity_user(
 	`id`             INT AUTO_INCREMENT PRIMARY KEY,

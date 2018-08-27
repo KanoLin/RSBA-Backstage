@@ -12,7 +12,7 @@ class User extends Model
     
     protected $guarded=[];
 
-    public function Activity()
+    public function activity()
     {
         return $this->belongsToMany('App\Activity')
                     ->using('App\SignUp')

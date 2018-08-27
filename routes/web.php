@@ -17,10 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::any('/download','RSBAExportController@export0');//->middleware('web','manager');
+
 Route::any('/download/{id}','RSBAExportController@export');
 Route::any('/time',function(){
-    date_default_timezone_set("Asia/Shanghai");
     return date('Y-m-d H:i:s');
 });
 
@@ -42,8 +41,9 @@ Route::middleware('web')->group(function(){
         Route::post('/api/manager/query/{activity_id}/userinfo','RSBAController@userinfo_query');
         
         Route::post('/download/{activity_id}','RSBAExportController@export');
+        Route::post('/daolnwod','RSBAExportController@export0');
     //});
-
+    
     Route::middleware('init')->group(function(){
         Route::post('/api/user/query/activity','RSBAUserController@activity_query');
         Route::post('/api/user/register/{activity_id}','RSBAUserController@register');

@@ -21,7 +21,6 @@ class RSBAUserController extends Controller
     {
         $name = $request->session()->get('name');
         $activity = Activity::find($id);
-        date_default_timezone_set("Asia/Shanghai");
         if ($activity == null)
             return response()->json([
             'err_code' => 4,
@@ -37,25 +36,30 @@ class RSBAUserController extends Controller
             'err_code' => 6,
             'err_msg' => '活动未开始！'
         ]);
-        $ml = MemberList::find($id);
-        $mn = MemberNow::find($id);
         $user = User::where('name', $name)->first();
+        if ($activity->user()->where('name',$user->name)->exists())
+            return response()->json([
+            'err_code' => 9,
+            'err_msg' => '已经报过名了哦！'
+        ]);
         $sum = 0;
         $errcode = -1;
         $errmsg = '完了，凉凉';
-        DB::transaction(function () {
+        DB::transaction(function () use ($activity, $user, $id, $name, &$errcode, &$errmsg) {
+            $ml = MemberList::find($id);
+            $mn = MemberNow::find($id);
             $member = $activity->member;
             $award = $activity->member;
             $current = $activity->current_member;
             if (($current >= $member) || ($current >= $award)) {
                 $errcode = 1;
                 $errmsg = '总人数已达上限哦！';
-            } else if (($mn->{$user->department} >= $ml->{$user->department})&&($activity->type==1)) {
+            } else if (($mn->{$user->department} >= $ml->{$user->department}) && ($activity->type == 1)) {
                 $errcode = 2;
                 $errmsg = '部门人数已达上限哦！';
             } else {
                 $activity->current_member++;
-                $mn->{$user->department}++;
+                $mn->{'dep' . $user->department}++;
                 $activity->save();
                 $mn->save();
                 $activity->user()->attach($user->id);
@@ -74,7 +78,6 @@ class RSBAUserController extends Controller
     {
         $name = $request->session()->get('name');
         $user = User::where('name', $name)->first();
-        date_default_timezone_set("Asia/Shanghai");
         if ($user == null)
             return response()->json([
             'err_code' => 4,
@@ -90,15 +93,15 @@ class RSBAUserController extends Controller
                     ->get();
                 break;
             case 1:
-                $activities = Activity::whereDoesntHave('user', function ($query) {
-                    $query->where('id', $user->id);
+                $activities = Activity::whereDoesntHave('user', function ($query) use($user) {
+                    $query->where('name', $user->name);
                 })->orderBy('id', 'desc')
                     ->take($request->number + 1)
                     ->get();
                 break;
             case 2:
-                $activities = Activity::whereHas('user', function ($query) {
-                    $query->where('id', $user->id);
+                $activities = Activity::whereHas('user', function ($query) use($user) {
+                    $query->where('name', $user->name);
                 })->orderBy('id', 'desc')
                     ->take($request->number + 1)
                     ->get();
@@ -133,8 +136,8 @@ class RSBAUserController extends Controller
                 $ary['award'] = $act->award;
             }
             $ary['current_member'] = $act->current_member;
-            if (($act->type == 1) && (MemberList::find($act->id)->{'dep'.$user->department} <= MemberNow::find($act->id)->{'dep'.$user->department}))
-                $ary['is_department_full'] = MemberList::find($act->id)->{'dep'.$user->department};
+            if (($act->type == 1) && (MemberList::find($act->id)->{'dep' . $user->department} <= MemberNow::find($act->id)->{'dep' . $user->department}))
+                $ary['is_department_full'] = MemberList::find($act->id)->{'dep' . $user->department};
             else $ary['is_department_full'] = false;
             $actsdata[] = $ary;
         }

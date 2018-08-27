@@ -47,6 +47,11 @@ class RSBAUserValidateController extends Controller
     //登录认证
     public function login(Request $request)
     {
+        if ($request->session()->has('name'))
+            return response()->json([
+                'err_code' => 8,
+                'err_msg' => '请勿重复登录哦！',
+        ]);
         $server_url = config('RSBA-Validate.auth_url');
 
         $post_data = array(
@@ -78,19 +83,15 @@ class RSBAUserValidateController extends Controller
             'is_manager' => $jud
 
         ]);
-        
-        if (User::where('name', $data['name'])->count() == 0) {
-            $user = new User;
-            $user->stuno = $request->student_id;
-            $user->name = $data['name'];
-            $user->department = config('RSBA.' . $data['dep']);
-            $user->tele = $data['mobile'];
-            $user->grp = $data['grp'];
-            $user->save();
-        }else {
-            $user=User::find(1);
-            $user->save();
-        }
+        $user = User::where('name', $data['name'])->first();
+        if ($user == null) $user = new User;
+        $user->stuno = $request->student_id;
+        $user->name = $data['name'];
+        $user->department = config('RSBA.' . $data['dep']);
+        $user->tele = $data['mobile'];
+        $user->grp = $data['grp'];
+        $user->save();
+
         return response()->json([
             'err_code' => 0,
             'err_msg' => '',

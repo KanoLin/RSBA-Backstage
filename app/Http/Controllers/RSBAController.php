@@ -23,7 +23,6 @@ class RSBAController extends Controller
             'err_msg' => '数据不足！',
         ]);
 
-        date_default_timezone_set("Asia/Shanghai");
         if ($request->action_time<date('Y-m-d H:i:s'))
         return response()->json([
             'err_code' => 6,
@@ -71,7 +70,6 @@ class RSBAController extends Controller
             'err_code' => 8,
             'err_msg' => '限制人数少于奖品数哦！',
         ]);
-        date_default_timezone_set("Asia/Shanghai");
         if ($request->book_time<date('Y-m-d H:i:s'))
         return response()->json([
             'err_code' => 6,
@@ -147,7 +145,7 @@ class RSBAController extends Controller
             'err_msg' => '活动不存在'
         ]);
         $users = $activity->user()
-            ->skip($request->start_ord - 1)
+            ->skip(($request->start_ord )?$request->start_ord-1:$request->start_ord)
             ->take($request->number + 1)
             ->get();
         $i = 0;
