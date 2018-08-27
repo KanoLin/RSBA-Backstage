@@ -6,3 +6,5 @@
 - 前端请求链接配置为*后台存放环境/后台文件夹名/public/接口路由* 
     - 栗子：`url='localhost/RSBA-Backstage/public/api/login'`
 - 一切配置完就可以跑起来了😂
+-------
+#### Code By KanoLin. Power By Laravel5.6. 2018.
