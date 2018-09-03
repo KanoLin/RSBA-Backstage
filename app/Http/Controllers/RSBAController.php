@@ -9,6 +9,7 @@ use App\Activity;
 use App\MemberList;
 use App\MemberNow;
 use App\SignUp;
+use Validator;
 
 
 class RSBAController extends Controller
@@ -16,15 +17,21 @@ class RSBAController extends Controller
     //管理员发起志愿者活动
     public function volunteer(Request $request)
     {
-
+        
         if (!$request->has(['title', 'details', 'action_time', 'member']))
             return response()->json([
             'err_code' => 2,
             'err_msg' => '数据不足！',
         ]);
 
-        if ($request->action_time<date('Y-m-d H:i:s'))
-        return response()->json([
+        if (date('Y-m-d H:i:s', strtotime($request->action_time)) != $request->action_time)
+            return response()->json([
+            'err_code' => 10,
+            'err_msg' => '时间格式不对哦！',
+        ]);
+
+        if ($request->action_time < date('Y-m-d H:i:s'))
+            return response()->json([
             'err_code' => 6,
             'err_msg' => '时间已经过了哦！',
         ]);
@@ -58,20 +65,24 @@ class RSBAController extends Controller
     //管理员发起福利活动
     public function award(Request $request)
     {
-
+        
         if (!$request->has(['title', 'details', 'book_time', 'award', 'member_list']))
             return response()->json([
             'err_code' => 2,
             'err_msg' => '数据不足！',
         ]);
-
+        if (date('Y-m-d H:i:s', strtotime($request->book_time)) != $request->book_time)
+            return response()->json([
+            'err_code' => 10,
+            'err_msg' => '时间格式不对哦！',
+        ]);
         if ($request->award > array_sum($request->member_list))
             return response()->json([
             'err_code' => 8,
             'err_msg' => '限制人数少于奖品数哦！',
         ]);
-        if ($request->book_time<date('Y-m-d H:i:s'))
-        return response()->json([
+        if ($request->book_time < date('Y-m-d H:i:s'))
+            return response()->json([
             'err_code' => 6,
             'err_msg' => '时间已经过了哦！',
         ]);
@@ -88,7 +99,7 @@ class RSBAController extends Controller
         $ml = new MemberList;
         $member_arr = $request->member_list;
         for ($i = 0; $i < 10; $i++) {
-            $ml->{'dep'.$i} = $member_arr[$i];
+            $ml->{'dep' . $i} = $member_arr[$i];
         }
 
         $mn = new MemberNow;
@@ -145,7 +156,8 @@ class RSBAController extends Controller
             'err_msg' => '活动不存在'
         ]);
         $users = $activity->user()
-            ->skip(($request->start_ord )?$request->start_ord-1:$request->start_ord)
+            ->where('department',$request->department)
+            ->skip(($request->start_ord) ? $request->start_ord - 1 : $request->start_ord)
             ->take($request->number + 1)
             ->get();
         $i = 0;
@@ -156,7 +168,7 @@ class RSBAController extends Controller
             $usersdata[] = [
                 'student_id' => $user->stuno,
                 'name' => $user->name,
-                'department' => config('RSBA.' . $user->department),
+                //'department' => config('RSBA.' . $user->department),
                 'tele' => $user->tele
             ];
         }

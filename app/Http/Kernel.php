@@ -60,5 +60,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'manager' => \App\Http\Middleware\IsManager::class,
         'init' => \App\Http\Middleware\IsInit::class,
+        'validate' => \App\Http\Middleware\RequestValidate::class,
     ];
 }

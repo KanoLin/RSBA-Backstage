@@ -54,6 +54,11 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
         ],
+        
+        'img' => [
+            'driver' => 'local',
+            'root' => storage_path('app/RSBA-image')
+        ],
 
         's3' => [
             'driver' => 's3',
@@ -63,7 +68,6 @@ return [
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
         ],
-
     ],
 
 ];
