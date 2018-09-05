@@ -31,15 +31,17 @@ Route::middleware('web')->group(function(){
     Route::post('/api/signout','RSBAUserValidateController@signout');
     
    // Route::middleware('manager')->group(function(){
-        Route::middleware('validate')->group(function(){
+        Route::middleware('validate:0')->group(function(){
         
         Route::post('/api/manager/publish/volunteer','RSBAController@volunteer');
         Route::post('/api/manager/publish/award','RSBAController@award');
         });
         Route::post('/api/manager/query/{activity_id}/department','RSBAController@member_query');
         
+        Route::middleware('validate:1')->group(function(){
         Route::post('/api/publisher/modify/volunteer/{activity_id}','RSBAPublisherController@modify_volunteer');
         Route::post('/api/publisher/modify/award/{activity_id}','RSBAPublisherController@modify_award');
+        });
         Route::post('/api/publisher/delete/{activity_id}','RSBAPublisherController@kill');
         Route::post('/api/publisher/modify/image/{activity_id}','RSBAPublisherController@upload_img');
         

@@ -8,10 +8,11 @@ use Validator;
 
 class RequestValidate
 {
-    public function handle($request,Closure $next)
+    public function handle($request,Closure $next,$type)
     {
-        $validator=Validator::make($request->all(),[
-            'title'=>'required|max:25',
+        if ($type==0)$validate0=['title'=>'required|max:25'];
+        else $validate0=[];
+        $validate=[
             'details'=>'required|max:100',
             'action_time'=>'required_without:book_time|date_format:Y-m-d H:i:s|after:now',
             'book_time'=>'required_without:action_time|date_format:Y-m-d H:i:s|after:now',
@@ -29,7 +30,9 @@ class RequestValidate
                     return $fail(':attribute和需大于奖品数哦！');
                 }]
 
-        ],[
+            ];
+        $validate=array_merge($validate0,$validate);
+        $validator=Validator::make($request->all(),$validate,[
             'required'=>':attribute 是必须的哟！',
             'max'=>':attribute 不能超过:max字符哦！',
             'min'=>':attribute 不能小于:min哦！',

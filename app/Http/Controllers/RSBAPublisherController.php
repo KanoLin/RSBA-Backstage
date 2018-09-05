@@ -19,6 +19,7 @@ class RSBAPublisherController extends Controller
         $activity = Activity::find($id);
         
         
+        
         if ($activity == null)
             return response()->json([
             'err_code' => 4,
