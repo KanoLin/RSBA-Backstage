@@ -30,7 +30,7 @@ Route::middleware('web')->group(function(){
     Route::post('/api/login','RSBAUserValidateController@login');
     Route::post('/api/signout','RSBAUserValidateController@signout');
     
-   // Route::middleware('manager')->group(function(){
+    Route::middleware('manager')->group(function(){
         Route::middleware('validate:0')->group(function(){
         
         Route::post('/api/manager/publish/volunteer','RSBAController@volunteer');
@@ -50,7 +50,7 @@ Route::middleware('web')->group(function(){
         
         Route::post('/download/{activity_id}','RSBAExportController@export');
         Route::post('/daolnwod','RSBAExportController@export0');
-    //});
+    });
     
     Route::middleware('init')->group(function(){
         Route::post('/api/user/query/activity','RSBAUserController@activity_query');
@@ -60,8 +60,6 @@ Route::middleware('web')->group(function(){
             return Storage::get('/RSBA-img/'.$id);
         });
     });
-    /*Route::post('/api/publisher/roll/{activity_id}','RSBAController@test2'); */
-
 
 });
 
