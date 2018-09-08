@@ -146,7 +146,7 @@ class RSBAUserController extends Controller
             'err_msg' => '',
             'data' => [
                 'is_end' => true,
-                'activity' => []
+                'activities' => []
             ]
         ]);
         if ($request->start_id == 0) $startid = Activity::orderby('id', 'desc')->first()->id;
@@ -212,7 +212,7 @@ class RSBAUserController extends Controller
             array_pop($actsdata);
             $data['is_end'] = false;
         } else $data['is_end'] = true;
-        $data['activity'] = $actsdata;
+        $data['activities'] = $actsdata;
         return response()->json([
             'err_code' => 0,
             'err_msg' => '',
