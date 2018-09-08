@@ -17,7 +17,7 @@ class RSBAController extends Controller
     //管理员发起志愿者活动
     public function volunteer(Request $request)
     {
-        
+
         if (!$request->has(['title', 'details', 'action_time', 'member']))
             return response()->json([
             'err_code' => 2,
@@ -65,7 +65,7 @@ class RSBAController extends Controller
     //管理员发起福利活动
     public function award(Request $request)
     {
-        
+
         if (!$request->has(['title', 'details', 'book_time', 'award', 'member_list']))
             return response()->json([
             'err_code' => 2,
@@ -156,26 +156,17 @@ class RSBAController extends Controller
             'err_msg' => '活动不存在'
         ]);
         $users = $activity->user()
-            ->where('department',$request->department)
-            ->skip(($request->start_ord) ? $request->start_ord - 1 : $request->start_ord)
-            ->take($request->number + 1)
+            ->where('department', $request->department)
             ->get();
-        $i = 0;
         $data = array();
         $usersdata = array();
         foreach ($users as $user) {
-            $i++;
             $usersdata[] = [
                 'student_id' => $user->stuno,
                 'name' => $user->name,
-                //'department' => config('RSBA.' . $user->department),
                 'tele' => $user->tele
             ];
         }
-        if ($i == $request->number + 1) {
-            array_pop($usersdata);
-            $data['is_end'] = false;
-        } else $data['is_end'] = true;
         $data['users'] = $usersdata;
         return response()->json([
             'err_code' => 0,
