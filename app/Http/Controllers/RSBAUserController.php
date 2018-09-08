@@ -189,7 +189,7 @@ class RSBAUserController extends Controller
             $ary = [
                 'id' => $act->id,
                 'is_publisher' => ($name == $act->publisher) ? true : false,
-                'registered' => ($act->user()->where('name', $name)->get() == []) ? false : true,
+                'registered' => ($act->user()->where('name', $name)->get()->isEmpty()) ? false : true,
                 'type' => $act->type,
                 'title' => $act->title,
                 'details' => $act->details
