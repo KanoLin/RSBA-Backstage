@@ -55,7 +55,7 @@ Route::middleware('web')->group(function(){
     Route::middleware('init')->group(function(){
         Route::post('/api/user/query/activity','RSBAUserController@activity_query');
         Route::post('/api/user/register/{activity_id}','RSBAUserController@register');
-        Route::get('/activityimg/{activity_id?}',function($id='2.jpg'){
+        Route::get('/activityimg/{activity_id?}',function($id='0'){
             //return \File::get(storage_path().'/app/RSBA-img/'.$id);
             return Storage::get('/RSBA-img/'.$id);
         });
