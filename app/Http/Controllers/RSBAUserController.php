@@ -140,6 +140,15 @@ class RSBAUserController extends Controller
             'err_code' => 4,
             'err_msg' => '你，不存在'
         ]);
+        if (Activity::all()->isEmpty())
+            response()->json([
+            'err_code' => 0,
+            'err_msg' => '',
+            'data' => [
+                'is_end' => true,
+                'activity' => []
+            ]
+        ]);
         if ($request->start_id == 0) $startid = Activity::orderby('id', 'desc')->first()->id;
         else $startid = $request->start_id;
         switch ($request->type) {
