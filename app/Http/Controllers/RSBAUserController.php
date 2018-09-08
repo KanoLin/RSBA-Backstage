@@ -140,8 +140,8 @@ class RSBAUserController extends Controller
             'err_code' => 4,
             'err_msg' => '你，不存在'
         ]);
-        if (Activity::all()->isEmpty())
-            response()->json([
+        if (Activity::all()->first()==null)
+            return response()->json([
             'err_code' => 0,
             'err_msg' => '',
             'data' => [
