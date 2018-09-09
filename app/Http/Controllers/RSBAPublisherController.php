@@ -178,12 +178,12 @@ class RSBAPublisherController extends Controller
         $message = [
             'required' => '图片不能为空哦！',
             'image' => '必须为图片格式哦！',
-            'max' => '图片大小不超过200kb哦！'
+            'max' => '图片大小不能超过:maxkb哦！'
 
         ];
 
         $validator = Validator::make($request->all(), [
-            'image' => 'required|image|max:200'
+            'image' => 'required|image|max:1000'
         ], $message);
 
         $errcode = 0;

@@ -138,7 +138,7 @@ class RSBAUserController extends Controller
         if ($user == null)
             return response()->json([
             'err_code' => 4,
-            'err_msg' => '你，不存在'
+            'err_msg' => '尚未登录哦！'
         ]);
         if (Activity::all()->first() == null)
             return response()->json([
