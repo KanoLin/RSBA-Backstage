@@ -49,8 +49,8 @@ class RSBAUserValidateController extends Controller
     {
         if ($request->session()->has('name'))
             return response()->json([
-                'err_code' => 8,
-                'err_msg' => '请勿重复登录哦！',
+            'err_code' => 8,
+            'err_msg' => '请勿重复登录哦！',
         ]);
         $server_url = config('RSBA-Validate.auth_url');
 

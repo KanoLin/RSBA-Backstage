@@ -33,7 +33,8 @@ class ActivityUserExport implements FromCollection, WithStrictNullComparison, Sh
     }
     public function collection()
     {
-        return Activity::find($this->id)->user()->select('name', 'stuno', 'department', 'tele');
+        $acts=Activity::find($this->$id)->user()->select('name', 'stuno', 'department', 'tele');   
+        return $acts;
 
     }
 }

@@ -49,8 +49,9 @@ Route::middleware('web')->group(function () {
 
         Route::post('/api/manager/query/{activity_id}/userinfo', 'RSBAController@userinfo_query');
 
-        Route::post('/api/manager/download/{activity_id}', 'RSBAExportController@export');
-        Route::post('/api/manager/daolnwod/', 'RSBAExportController@export0');
+        Route::any('/api/manager/download/{activity_id}', 'RSBAExportController@export');
+        Route::any('/api/manager/download-xlsx/{activity_id}', 'RSBAExportController@export1');
+        Route::any('/api/manager/daolnwod/', 'RSBAExportController@export0');
     });
 
     Route::middleware('init')->group(function () {
