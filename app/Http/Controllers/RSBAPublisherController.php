@@ -132,8 +132,10 @@ class RSBAPublisherController extends Controller
             'err_code' => 5,
             'err_msg' => '不是发起人！'
         ]);
-        Storage::delete('/RSBA-img/' . $activity->image()->first()->img_name);
-        $activity->image()->delete();
+        if (!$activity->image()->get()->isEmpty()) {
+            Storage::delete('/RSBA-img/' . $activity->image()->first()->img_name);
+            $activity->image()->delete();
+        }
         Activity::find($id)->user()->detach();
         Activity::destroy($id);
         MemberList::destroy($id);
