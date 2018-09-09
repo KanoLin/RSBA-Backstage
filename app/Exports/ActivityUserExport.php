@@ -7,14 +7,14 @@ use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\Exportable;
 
-class ActivityUserExport implements FromQuery, WithStrictNullComparison,WithHeadings,ShouldAutoSize,WithTitle
+class ActivityUserExport implements FromCollection, WithStrictNullComparison, ShouldAutoSize, WithTitle, WithHeadings
 {
     use Exportable;
-    public $id;
-    public function headings(): array
+    public $id = 1;
+    public function headings() : array
     {
         return [
             '姓名',
@@ -27,12 +27,13 @@ class ActivityUserExport implements FromQuery, WithStrictNullComparison,WithHead
     {
         $this->id = $id;
     }
-    public function title(): string
+    public function title() : string
     {
-        return '活动用户信息表';
+        return Activity::find($this->id)->title . '-人员报名表';
     }
-    public function query()
+    public function collection()
     {
-        return Activity::query()->find($this->id)->user();
+        return Activity::find($this->id)->user()->select('name', 'stuno', 'department', 'tele');
+
     }
 }
