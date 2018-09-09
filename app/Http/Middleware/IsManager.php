@@ -9,7 +9,7 @@ class IsManager
 {
     public function handle($request,Closure $next)
     {
-         if (!($request->session()->get('is_mananger')))
+         if (($request->session()->get('is_mananger')))
             return response()->json([
                 'err_code' => 1,
                 'err_msg' => '权限不足！',
