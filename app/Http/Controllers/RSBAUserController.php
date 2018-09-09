@@ -140,7 +140,7 @@ class RSBAUserController extends Controller
             'err_code' => 4,
             'err_msg' => '你，不存在'
         ]);
-        if (Activity::all()->first()==null)
+        if (Activity::all()->first() == null)
             return response()->json([
             'err_code' => 0,
             'err_msg' => '',
@@ -205,7 +205,7 @@ class RSBAUserController extends Controller
             if (($act->type == 1) && (MemberList::find($act->id)->{'dep' . $user->department} <= MemberNow::find($act->id)->{'dep' . $user->department}))
                 $ary['is_department_full'] = MemberList::find($act->id)->{'dep' . $user->department};
             else $ary['is_department_full'] = false;
-            $ary['image'] = '/activityimg/' . $act->id;
+            $ary['image'] = '/activityimg/' . (($act->image()->get()->isEmpty()) ? '0' : $act->image()->first()->img_name);
             $actsdata[] = $ary;
         }
         if ($i == $request->number + 1) {

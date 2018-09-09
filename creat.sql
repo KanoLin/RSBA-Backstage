@@ -66,3 +66,11 @@ CREATE TABLE IF NOT EXISTS current_member_list(
     `created_at`     DATETIME          NOT NULL            COMMENT '创建时间',
     `updated_at`     DATETIME          NOT NULL            COMMENT '修改时间'
 )ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='部门报名人数表';
+
+CREATE TABLE IF NOT EXISTS image(
+    `id`             INT AUTO_INCREMENT PRIMARY KEY,
+    `activity_id`    INT UNSIGNED      NOT NULL DEFAULT 0  COMMENT '活动id',
+    `img_name`       VARCHAR(20)       NOT NULL DEFAULT '0'COMMENT '活动图片名',  
+    `created_at`     DATETIME          NOT NULL            COMMENT '创建时间',
+    `updated_at`     DATETIME          NOT NULL            COMMENT '修改时间'
+)ENGINE=InnoDB DEFAULT CHARSET=UTF8 COMMENT='活动图片表';

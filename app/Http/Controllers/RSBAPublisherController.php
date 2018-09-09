@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Activity;
 use App\MemberList;
 use App\MemberNow;
+use App\Image;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Validator;
+
 
 class RSBAPublisherController extends Controller
 {
@@ -17,9 +19,9 @@ class RSBAPublisherController extends Controller
     {
         $name = $request->session()->get('name');
         $activity = Activity::find($id);
-        
-        
-        
+
+
+
         if ($activity == null)
             return response()->json([
             'err_code' => 4,
@@ -130,6 +132,8 @@ class RSBAPublisherController extends Controller
             'err_code' => 5,
             'err_msg' => '不是发起人！'
         ]);
+        Storage::delete('/RSBA-img/' . $activity->image()->first()->img_name);
+        $activity->image()->delete();
         Activity::find($id)->user()->detach();
         Activity::destroy($id);
         MemberList::destroy($id);
@@ -141,10 +145,10 @@ class RSBAPublisherController extends Controller
         ]);
     }
 
-    public function upload_img(Request $request,$id)
+    public function upload_img(Request $request, $id)
     {
-        $name=$request->session()->get('name');
-        $activity=Activity::find($id);
+        $name = $request->session()->get('name');
+        $activity = Activity::find($id);
         if (empty($activity))
             return response()->json([
             'err_code' => 4,
@@ -160,41 +164,55 @@ class RSBAPublisherController extends Controller
             'err_code' => 6,
             'err_msg' => '活动已开始！'
         ]);
-        $message=[
-            'required'=>'图片不能为空哦！',
-            'image'=>'必须为图片格式哦！',
-            'max'=>'图片大小不超过200kb哦！'
+
+        $imagetable = Image::where('activity_id', $id)->first();
+        if ($imagetable == null) {
+            $imagetable = new Image();
+            $imagetable->activity_id = $id;
+            $imagetable->img_name = '0';
+            $imagetable->save();
+        }
+
+        $message = [
+            'required' => '图片不能为空哦！',
+            'image' => '必须为图片格式哦！',
+            'max' => '图片大小不超过200kb哦！'
 
         ];
 
-        $validator=Validator::make($request->all(),[
-            'image'=>'required|image|max:200'
-        ],$message);
+        $validator = Validator::make($request->all(), [
+            'image' => 'required|image|max:200'
+        ], $message);
 
-        $errcode=0;
-        $errmsg='';
-        if ($validator->fails()){
-            $errcode=11;
+        $errcode = 0;
+        $errmsg = '';
+        if ($validator->fails()) {
+            $errcode = 11;
             foreach ($validator->errors()->all() as $err)
-            $errmsg=$errmsg.$err;
+                $errmsg = $errmsg . $err;
             return response()->json([
-                'err_code'=>$errcode,
-                'err_msg'=>$errmsg
+                'err_code' => $errcode,
+                'err_msg' => $errmsg
             ]);
         }
-        $img=$request->file('image');
-        $fileextension=$img->getClientOriginalExtension();
-        $path=$img->storeAs(
-            'RSBA-img',$id//.'.'.$fileextension
+        $img = $request->file('image');
+        $time = time();
+        $path = $img->storeAs(
+            'RSBA-img',
+            $id . $time
         );
-        //$bool=Storage::disk('img')->putFileAs('/',$img,$id.'.'.$fileextension);
-        if (!$path){
-            $errcode=-2;
-            $errmsg='服务器保存失败！';
+        $img = null;
+        if (!$path) {
+            $errcode = -2;
+            $errmsg = '服务器保存失败！';
+        } else {
+            if (($imagetable->img_name != '0') && Storage::exists('/RSBA-img/' . $imagetable->img_name)) Storage::delete('/RSBA-img/' . $imagetable->img_name);
+            $imagetable->img_name = $id . $time;
+            $imagetable->save();
         }
         return response()->json([
-            'err_code'=>$errcode,
-            'err_msg'=>$errmsg
+            'err_code' => $errcode,
+            'err_msg' => $errmsg
         ]);
     }
 }
