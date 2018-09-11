@@ -35,7 +35,7 @@ class RSBAExportController extends Controller
             $content .= $user->tele . "\t\n";
         }
         $content = iconv("UTF-8", "GBK//IGNORE", $content);
-        $title = Activity::find($id)->title . '-人员报名表-' . date('Y-m-d h:i:s');
+        $title = Activity::find($id)->title . '-人员报名表-' . date('Y-m-d H:i:s');
         return response($content)
             ->withHeaders([
                 'Content-type' => 'text/csv;charset=GB2312',
