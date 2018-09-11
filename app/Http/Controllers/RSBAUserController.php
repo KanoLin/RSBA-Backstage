@@ -49,7 +49,7 @@ class RSBAUserController extends Controller
             $ml = MemberList::find($id);
             $mn = MemberNow::find($id);
             $member = $activity->member;
-            $award = $activity->member;
+            $award = $activity->award;
             $current = $activity->current_member;
             if ((($current >= $member) && ($activity->type == 0)) || (($current >= $award) && ($activity->type == 1))) {
                 $errcode = 1;

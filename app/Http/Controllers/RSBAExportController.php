@@ -8,15 +8,20 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\User;
 
 class RSBAExportController extends Controller
 {
-    public function export0()
+    public function export0(Request $request)
     {
+        if (User::where('name',$request->session()->get('name'))->first()->department!=7)
+        return response('404 Not Find',404);
         return (new RSBAExport)->download('百步梯活动管理系统' . date('Y-m-d H:i:s') . '.xlsx');
     }
     public function export1($id)
     {
+        if (User::where('name',$request->session()->get('name'))->first()->department!=7)
+        return response('404 Not Find',404);
         return (new ActivityUserExport($id))->download(Activity::find($id)->title . '-人员报名表-' . date('Y-m-d h:i:s') . '.xlsx');
     }
     public function export()
