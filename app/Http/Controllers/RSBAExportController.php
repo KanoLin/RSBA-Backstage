@@ -24,9 +24,9 @@ class RSBAExportController extends Controller
         return abort(404);
         return (new ActivityUserExport($id))->download(Activity::find($id)->title . '-人员报名表-' . date('Y-m-d h:i:s') . '.xlsx');
     }
-    public function export()
+    public function export($id)
     {
-        $users = Activity::find(3)->user()->select('name', 'stuno', 'department', 'tele')->get();
+        $users = Activity::find($id)->user()->select('name', 'stuno', 'department', 'tele')->get();
         $content = '姓名,学号,部门,手机' . "\n";
         foreach ($users as $user) {
             $content .= $user->name . ',';
@@ -35,7 +35,7 @@ class RSBAExportController extends Controller
             $content .= $user->tele . "\t\n";
         }
         $content = iconv("UTF-8", "GBK//IGNORE", $content);
-        $title = Activity::find(3)->first()->title . '-人员报名表-'.date('Y-m-d h:i:s');
+        $title = Activity::find($id)->first()->title . '-人员报名表-'.date('Y-m-d h:i:s');
         return response($content)
             ->withHeaders([
                 'Content-type' => 'text/csv;charset=GB2312',
