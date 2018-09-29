@@ -83,7 +83,7 @@ class RSBAUserValidateController extends Controller
             'is_manager' => $jud
 
         ]);
-        $user = User::where('name', $data['name'])->first();
+        $user = User::where('stuno', $request->student_id)->first();
         if ($user == null) $user = new User;
         $user->stuno = $request->student_id;
         $user->name = $data['name'];
